@@ -1,0 +1,75 @@
+org: degeta10
+service: authService
+
+# 1. Look mom, no plugins! Serverless v4 compiles TypeScript automatically.
+
+provider:
+  name: aws
+  runtime: nodejs24.x # 2. Fixed this! AWS Lambda doesn't support 24.x yet.
+  region: ap-south-1
+  environment:
+    CLIENT_ID: ${ssm:/CLIENT_ID}
+    REGION: ap-south-1
+    USER_POOL_ID: "ap-south-1_rQd5Ghru0"
+    TABLE_NAME: Users
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+          Resource:
+            - !GetAtt UsersTable.Arn
+            - !Join ["/", [!GetAtt UsersTable.Arn, "index/*"]]
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminGetUser
+          Resource:
+            - arn:aws:cognito-idp:ap-south-1:189118358672:userpool/${self:provider.environment.USER_POOL_ID}
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TABLE_NAME}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+
+functions:
+  signUp:
+    handler: handlers/signUp.handler
+    events:
+      - httpApi:
+          path: /sign-up
+          method: post
+
+  confirmSignUp:
+    handler: handlers/confirmSignUp.handler
+    events:
+      - httpApi:
+          path: /confirm-sign-up
+          method: post
+
+  signIn:
+    handler: handlers/signIn.handler
+    events:
+      - httpApi:
+          path: /sign-in
+          method: post
+
+  signOut:
+    handler: handlers/signOut.handler
+    events:
+      - httpApi:
+          path: /sign-out
+          method: post

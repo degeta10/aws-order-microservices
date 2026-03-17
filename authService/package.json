@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "shared": "file:../shared"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.161",
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

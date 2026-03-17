@@ -1,0 +1,15 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and middleware for Serverless microservices",
+  "main": "index.ts",
+  "dependencies": {
+    "@middy/core": "^4.0.0",
+    "@middy/http-json-body-parser": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/aws-lambda": "^8.10.119",
+    "@types/node": "^20.0.0"
+  }
+}
